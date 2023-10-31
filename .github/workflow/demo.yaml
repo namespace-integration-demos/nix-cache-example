@@ -1,0 +1,30 @@
+name: cache-nixos-test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on:
+      - nscloud-ubuntu-22.04-amd64-4x16-with-cache
+      - nscloud-cache-size-60gb
+      - nscloud-cache-tag-cache-nix
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up cache
+      run: |
+        sudo mkdir -p /cache/nix /nix
+        sudo mount --bind /cache/nix /nix
+        sudo chown runner /nix
+        
+    - uses: cachix/install-nix-action@v23
+      with: 
+         extra_nix_config: |
+            system-features = kvm nixos-test
+
+    - name: build nvim
+      run: |
+        mkdir -p out
+
+        nix bundle --bundler github:ralismark/nix-appimage './nix#neovim' && cp neovim-*.AppImage out/nvim
