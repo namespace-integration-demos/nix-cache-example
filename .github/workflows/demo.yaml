@@ -42,13 +42,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
       - uses: cachix/install-nix-action@v23
         with:
           extra_nix_config: |
             system-features = kvm nixos-test
+
+      - name: Set up Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Build a package
         run: |
