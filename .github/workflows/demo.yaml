@@ -1,0 +1,37 @@
+name: cache-nixos-test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on:
+      - nscloud-ubuntu-22.04-amd64-4x16-with-cache
+      - nscloud-cache-size-60gb
+      - nscloud-cache-tag-cache-nix
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up cache
+        run: |
+          sudo mkdir -p /cache/nix /nix
+          sudo mount --bind /cache/nix /nix
+          sudo chown runner /nix
+
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: |
+            system-features = kvm nixos-test
+
+      - uses: workflow/nix-shell-action@v3
+        with:
+          packages: go
+          script: |
+            go version
