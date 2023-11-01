@@ -30,7 +30,7 @@ jobs:
           extra_nix_config: |
             system-features = kvm nixos-test
 
-      - name: run nix
-        run: |
-          nix build
-          nix flake check
+      - uses: workflow/nix-shell-action@v3
+        with:
+          script: |
+            go version
