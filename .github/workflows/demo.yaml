@@ -32,7 +32,7 @@ jobs:
 
       - name: Build a package
         run: |
-          nix build 'nixpkgs#pkgsMusl.netperf'
+          nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
   build-with-magic-nix-cache:
@@ -52,5 +52,5 @@ jobs:
 
       - name: Build a package
         run: |
-          nix build 'nixpkgs#pkgsMusl.netperf'
+          nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
