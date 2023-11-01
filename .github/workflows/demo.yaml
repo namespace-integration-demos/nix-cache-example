@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up cache
+      - name: Set up Nix cache
         run: |
           sudo mkdir -p /cache/nix /nix
           sudo mount --bind /cache/nix /nix
@@ -30,7 +30,7 @@ jobs:
           extra_nix_config: |
             system-features = kvm nixos-test
 
-      - name: build a package
+      - name: Build a package
         run: |
           nix build 'nixpkgs#pkgsMusl.netperf'
           ls -lsah result/bin
