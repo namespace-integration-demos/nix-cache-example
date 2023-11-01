@@ -32,5 +32,6 @@ jobs:
 
       - uses: workflow/nix-shell-action@v3
         with:
+          packages: go
           script: |
             go version
