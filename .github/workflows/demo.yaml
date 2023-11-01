@@ -10,6 +10,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-without-caching:
+    runs-on:
+      - nscloud-ubuntu-22.04-amd64-4x16
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: |
+            system-features = kvm nixos-test
+
+      - name: Build a package
+        run: |
+          nix build 'nixpkgs#google-cloud-sdk'
+          ls -lsah result/bin
+
   build-with-namespace-cache-volume:
     runs-on:
       - nscloud-ubuntu-22.04-amd64-4x16-with-cache
