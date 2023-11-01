@@ -30,8 +30,7 @@ jobs:
           extra_nix_config: |
             system-features = kvm nixos-test
 
-      - name: build nvim
+      - name: run nix
         run: |
-          mkdir -p out
-
-          nix bundle --bundler github:ralismark/nix-appimage '#neovim' && cp neovim-*.AppImage out/nvim
+          nix build
+          nix flake check
