@@ -1,6 +1,6 @@
 name: cache-nixos-test
 
-on: 
+on:
   push:
     branches:
       - main
@@ -17,21 +17,21 @@ jobs:
       - nscloud-cache-tag-cache-nix
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up cache
-      run: |
-        sudo mkdir -p /cache/nix /nix
-        sudo mount --bind /cache/nix /nix
-        sudo chown runner /nix
-        
-    - uses: cachix/install-nix-action@v23
-      with: 
-         extra_nix_config: |
+      - uses: actions/checkout@v4
+
+      - name: Set up cache
+        run: |
+          sudo mkdir -p /cache/nix /nix
+          sudo mount --bind /cache/nix /nix
+          sudo chown runner /nix
+
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: |
             system-features = kvm nixos-test
 
-    - name: build nvim
-      run: |
-        mkdir -p out
+      - name: build nvim
+        run: |
+          mkdir -p out
 
-        nix bundle --bundler github:ralismark/nix-appimage './nix#neovim' && cp neovim-*.AppImage out/nvim
+          nix bundle --bundler github:ralismark/nix-appimage '#neovim' && cp neovim-*.AppImage out/nvim
