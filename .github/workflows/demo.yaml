@@ -94,10 +94,9 @@ jobs:
           sudo mount --bind /cache/etc-nix /etc/nix
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v4
+        uses: DeterminateSystems/nix-installer-action@v6
         with:
           init: none
-          planner: linux
           github-token: null
 
       - name: Allows user runner to run nix
