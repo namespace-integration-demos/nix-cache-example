@@ -71,3 +71,38 @@ jobs:
         run: |
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
+
+  build-with-namespace-cache-volume-determinatesystems-installer:
+    runs-on:
+      - nscloud-ubuntu-22.04-amd64-4x16-with-cache
+      - nscloud-cache-size-60gb
+      - nscloud-cache-tag-cache-nix-detsys
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Nix cache
+        run: |
+          sudo mkdir -p /cache/nix /nix
+          sudo mount --bind /cache/nix /nix
+          sudo chown runner /nix
+
+          # the nix-installer-action doesn't recreate /etc/nix/* when nix 
+          # appears to be already installed, so we want to preserve nix's configuration files
+
+          sudo mkdir -p /cache/etc-nix /etc/nix
+          sudo mount --bind /cache/etc-nix /etc/nix
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+        with:
+          init: none
+
+      - name: Allows user runner to run nix
+        run: |
+          sudo chown -R runner:runner /nix/var/nix /nix/var/log /nix/store
+
+      - name: Build a package
+        run: |
+          nix build 'nixpkgs#google-cloud-sdk'
+          ls -lsah result/bin
