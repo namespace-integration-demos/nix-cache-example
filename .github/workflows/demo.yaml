@@ -97,6 +97,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v4
         with:
           init: none
+          planner: linux
 
       - name: Allows user runner to run nix
         run: |
