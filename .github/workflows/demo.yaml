@@ -104,36 +104,39 @@ jobs:
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
-  with-ns-cache-volume-determinatesystems-installer:
-    runs-on:
-      - namespace-profile-amd64-with-caching
+  # DeterminateSystems/nix-installer-action doesn't support nscloud cache.
+  # https://namespacelabs.slack.com/archives/C052BNWAFLL/p1709047110830379
+  #
+  # with-ns-cache-volume-determinatesystems-installer:
+  #   runs-on:
+  #     - namespace-profile-amd64-with-caching
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set up Nix cache
-        run: |
-          sudo mkdir -p /cache/nix /nix
-          sudo mount --bind /cache/nix /nix
-          sudo chown runner /nix
+  #     - name: Set up Nix cache
+  #       run: |
+  #         sudo mkdir -p /cache/nix /nix
+  #         sudo mount --bind /cache/nix /nix
+  #         sudo chown runner /nix
 
-          # the nix-installer-action doesn't recreate /etc/nix/* when nix 
-          # appears to be already installed, so we want to preserve nix's configuration files
+  #         # the nix-installer-action doesn't recreate /etc/nix/* when nix
+  #         # appears to be already installed, so we want to preserve nix's configuration files
 
-          sudo mkdir -p /cache/etc-nix /etc/nix
-          sudo mount --bind /cache/etc-nix /etc/nix
+  #         sudo mkdir -p /cache/etc-nix /etc/nix
+  #         sudo mount --bind /cache/etc-nix /etc/nix
 
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v6
-        with:
-          init: none
-          github-token: null
+  #     - name: Install Nix
+  #       uses: DeterminateSystems/nix-installer-action@v6
+  #       with:
+  #         init: none
+  #         github-token: null
 
-      - name: Allows user runner to run nix
-        run: |
-          sudo chown -R runner:runner /nix/var/nix /nix/var/log /nix/store
+  #     - name: Allows user runner to run nix
+  #       run: |
+  #         sudo chown -R runner:runner /nix/var/nix /nix/var/log /nix/store
 
-      - name: Build a package
-        run: |
-          nix build 'nixpkgs#google-cloud-sdk'
-          ls -lsah result/bin
+  #     - name: Build a package
+  #       run: |
+  #         nix build 'nixpkgs#google-cloud-sdk'
+  #         ls -lsah result/bin
