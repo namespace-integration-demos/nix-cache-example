@@ -70,7 +70,7 @@ jobs:
           apt-get update -y && apt-get install -y sudo
 
       - name: Set up Nix cache
-        uses: namespacelabs/nscloud-cache-action@433aa4ed177936eb450aa0def6709f2d76254846
+        uses: namespacelabs/nscloud-cache-action@344aba3
         with:
           path: /nix
 
