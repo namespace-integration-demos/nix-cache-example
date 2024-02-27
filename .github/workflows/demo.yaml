@@ -56,6 +56,11 @@ jobs:
 
     container:
       image: node:21
+      env:
+        NSC_CACHE_PATH: ${{ env.NSC_CACHE_PATH }}
+      volumes:
+        - /cache:/cache
+      options: --cap-add=SYS_ADMIN
 
     steps:
       - uses: actions/checkout@v4
