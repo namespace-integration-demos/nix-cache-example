@@ -65,6 +65,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install sudo
+        run: |
+          apt-get update -y && apt-get install -y sudo
+
       - name: Set up Nix cache
         uses: namespacelabs/nscloud-cache-action@v1
         with:
