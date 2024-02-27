@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-without-caching:
+  without-caching:
     runs-on:
       - nscloud-ubuntu-22.04-amd64-4x16
 
@@ -27,7 +27,7 @@ jobs:
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
-  build-with-namespace-cache-volume:
+  with-ns-cache-volume:
     runs-on:
       # Replace with your profile label https://namespace.so/docs/features/faster-github-actions#using-runner-profiles
       - namespace-profile-amd64-with-caching
@@ -50,7 +50,32 @@ jobs:
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
-  build-with-magic-nix-cache:
+  with-ns-cache-in-container:
+    runs-on:
+      - namespace-profile-amd64-with-caching
+
+    container:
+      image: node:21
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Nix cache
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: /nix
+
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: |
+            system-features = kvm nixos-test
+
+      - name: Build a package
+        run: |
+          nix build 'nixpkgs#google-cloud-sdk'
+          ls -lsah result/bin
+
+  with-magic-nix-cache:
     runs-on:
       - nscloud-ubuntu-22.04-amd64-4x16
 
@@ -70,7 +95,7 @@ jobs:
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
-  build-with-namespace-cache-volume-determinatesystems-installer:
+  with-ns-cache-volume-determinatesystems-installer:
     runs-on:
       - namespace-profile-amd64-with-caching
 
