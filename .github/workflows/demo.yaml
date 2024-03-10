@@ -52,6 +52,16 @@ jobs:
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
 
+      - name: Breakpoint on failure
+        if: failure() && github.ref_name == 'main'
+        uses: namespacelabs/breakpoint-action@v0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          duration: 15m
+          authorized-users: edganiukov,hugosantos,n-g,htr,nichtverstehen,gmichelo
+          slack-announce-channel: "#ci"
+
   with-ns-cache-in-container:
     runs-on:
       - namespace-profile-amd64-with-caching
