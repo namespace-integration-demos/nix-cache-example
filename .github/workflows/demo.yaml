@@ -63,8 +63,13 @@ jobs:
           slack-announce-channel: "#ci"
 
   with-ns-cache-in-container:
+    # Running in containers requires extra configuration.
+    # We also configure a unique cache tag to not share caches with workflows running outside containers.
+    # See https://namespace.so/docs/actions/nscloud-cache-action#advanced-running-github-jobs-in-containers
     runs-on:
-      - namespace-profile-amd64-with-caching
+      - nscloud-ubuntu-22.04-amd64-2x4-with-cache
+      - nscloud-cache-size-20gb
+      - nscloud-cache-tag-nix-in-container
 
     container:
       image: node:21
