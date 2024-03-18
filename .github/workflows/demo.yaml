@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: cachix/install-nix-action@v23
+      - uses: cachix/install-nix-action@v26
         with:
           extra_nix_config: |
             system-features = kvm nixos-test
@@ -42,7 +42,7 @@ jobs:
         with:
           path: /nix
 
-      - uses: cachix/install-nix-action@v23
+      - uses: cachix/install-nix-action@v26
         with:
           extra_nix_config: |
             system-features = kvm nixos-test
@@ -51,16 +51,6 @@ jobs:
         run: |
           nix build 'nixpkgs#google-cloud-sdk'
           ls -lsah result/bin
-
-      - name: Breakpoint on failure
-        if: failure() && github.ref_name == 'main'
-        uses: namespacelabs/breakpoint-action@v0
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          duration: 15m
-          authorized-users: edganiukov,hugosantos,n-g,htr,nichtverstehen,gmichelo
-          slack-announce-channel: "#ci"
 
   with-ns-cache-in-container:
     # Running in containers requires extra configuration.
@@ -87,7 +77,7 @@ jobs:
           apt-get update -y && apt-get install -y sudo
 
       - name: Set up Nix cache
-        uses: namespacelabs/nscloud-cache-action@344aba36b864a47c4bae7ea0c0aff4cda7e6d50a
+        uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: /nix
 
@@ -114,7 +104,7 @@ jobs:
             system-features = kvm nixos-test
 
       - name: Set up Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
+        uses: DeterminateSystems/magic-nix-cache-action@v4
 
       - name: Build a package
         run: |
