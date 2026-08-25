@@ -50,6 +50,35 @@ jobs:
         run: |
           nix develop --accept-flake-config -c pre-commit run
 
+  with-ns-cache-volume-macos:
+    runs-on:
+      - nscloud-macos-sequoia-arm64-6x14-with-cache
+      - nscloud-cache-size-50gb
+      - nscloud-cache-tag-cache-nix-macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure the cache volume as the Nix store
+        run: |
+          info="$RUNNER_TEMP/nsc-cache-volume.plist"
+          diskutil info -plist "$NSC_CACHE_PATH" > "$info"
+          echo "NIX_ROOT_DISK=$(plutil -extract ParentWholeDisk raw "$info")" >> "$GITHUB_ENV"
+          echo "NIX_VOLUME_LABEL=$(plutil -extract VolumeName raw "$info")" >> "$GITHUB_ENV"
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          determinate: false
+          mac-root-disk: ${{ env.NIX_ROOT_DISK }}
+          mac-volume-label: ${{ env.NIX_VOLUME_LABEL }}
+          extra-conf: |
+            experimental-features = nix-command flakes
+
+      - name: Build a package
+        run: |
+          nix develop --accept-flake-config -c pre-commit run
+
   with-magic-nix-cache:
     runs-on:
       - nscloud-ubuntu-22.04-amd64-4x16
@@ -68,39 +97,3 @@ jobs:
       - name: Build a package
         run: |
           nix develop --accept-flake-config -c pre-commit run
-
-  # DeterminateSystems/nix-installer-action doesn't support nscloud cache.
-  # https://namespacelabs.slack.com/archives/C052BNWAFLL/p1709047110830379
-  #
-  # with-ns-cache-volume-determinatesystems-installer:
-  #   runs-on:
-  #     - namespace-profile-amd64-with-caching
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Set up Nix cache
-  #       run: |
-  #         sudo mkdir -p /cache/nix /nix
-  #         sudo mount --bind /cache/nix /nix
-  #         sudo chown runner /nix
-
-  #         # the nix-installer-action doesn't recreate /etc/nix/* when nix
-  #         # appears to be already installed, so we want to preserve nix's configuration files
-
-  #         sudo mkdir -p /cache/etc-nix /etc/nix
-  #         sudo mount --bind /cache/etc-nix /etc/nix
-
-  #     - name: Install Nix
-  #       uses: DeterminateSystems/nix-installer-action@v6
-  #       with:
-  #         init: none
-  #         github-token: null
-
-  #     - name: Allows user runner to run nix
-  #       run: |
-  #         sudo chown -R runner:runner /nix/var/nix /nix/var/log /nix/store
-
-  #     - name: Build a package
-  #       run: |
-  #         nix develop --accept-flake-config -c pre-commit run
